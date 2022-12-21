@@ -12,6 +12,9 @@ const app = express();
 //Configurar CORS
 app.use(cors());
 
+// Lectura y parseo del body
+app.use(express.json());
+
 //Conexión BD Mongo
 dbConnection();
 
@@ -20,13 +23,19 @@ dbConnection();
 //ZL3MZzJ1CiGw0s13
 
 //Rutas
-app.get( '/', (req, res) => {
+app.use('/api/usuarios', require('./routes/usuarios.route'));
+/*
+app.get( '/api/usuarios', (req, res) => {
 
     res.json({
         ok: true,
-        msg: 'Hola Mundo'
+        usuarios: [{
+            id:258,
+            nombre: 'Luis'
+        }]
     })
 });
+*/
 
 app.listen(process.env.PORT, () => {
     console.log('Servidor corriendo en puerto: ' + process.env.PORT);
