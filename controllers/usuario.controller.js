@@ -3,6 +3,7 @@ const bcrypt = require('bcryptjs');
 
 const Usuario = require('../models/usuario.model');
 const { generarJWT } = require('../helpers/jwt');
+const { json } = require('express/lib/response');
 
 
 const getUsuarios = async (req, res) => {
@@ -107,7 +108,14 @@ const actualizarUsuario = async (req, res = response) => {
 
         }
 
-        campos.email = email;
+        if( !usuarioDB.google ){
+            campos.email = email;
+        }else if( usuarioDB.email !== email){
+            return res.status(400).json({
+                ok: false,
+                msg: 'Usuario de google no pueden cambiar su correo'
+            });
+        }
 
         //al destructurar ya no es necesario el delete porque las excluimos
         /*

@@ -103,9 +103,14 @@ const renewToken = async( req, res = response ) => {
     //Generar jwt - TOKEN
     const token = await generarJWT(uid);
 
+    //Obtener el usuario por UID
+    //const usuario = await Usuario.findById(uid,'nombre email role google img');
+    const usuario = await Usuario.findById(uid);
+
     res.status(200).json({
         ok: true,
-        token
+        token,
+        usuario
     })
 }
 
