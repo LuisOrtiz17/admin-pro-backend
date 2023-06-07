@@ -3,16 +3,31 @@ const bcrypt = require('bcryptjs');
 
 const Usuario = require('../models/usuario.model');
 const { generarJWT } = require('../helpers/jwt');
+const { json } = require('express/lib/response');
 
 
 const getUsuarios = async (req, res) => {
 
-    const usuarios = await Usuario.find({}, 'nombre email role google');
+    const desde = Number(req.query.desde) || 0;
+
+    /*
+    const usuarios = await Usuario.find({}, 'nombre email role google')
+    .skip(desde)
+    .limit(5);
+
+    const total = await Usuario.count();
+    */
+    const [usuarios, total] = await Promise.all([
+        Usuario.find({}, 'nombre email role google img')
+            .skip(desde)
+            .limit(5),
+        Usuario.count()
+    ]);
 
     res.json({
         ok: true,
         usuarios,
-        uid: req.uid
+        total
     })
 }
 
@@ -46,7 +61,7 @@ const crearUsuario = async (req, res = response) => {
         res.json({
             ok: true,
             usuario,
-            jwt: token
+            token
         });
 
     } catch (error) {
@@ -93,7 +108,14 @@ const actualizarUsuario = async (req, res = response) => {
 
         }
 
-        campos.email = email;
+        if( !usuarioDB.google ){
+            campos.email = email;
+        }else if( usuarioDB.email !== email){
+            return res.status(400).json({
+                ok: false,
+                msg: 'Usuario de google no pueden cambiar su correo'
+            });
+        }
 
         //al destructurar ya no es necesario el delete porque las excluimos
         /*
