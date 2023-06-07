@@ -14,7 +14,7 @@ const getBusqueda = async(req, res = response) =>{
     const medicos = await Medico.find({nombre: regex});
     */
 
-    const [usuarios, medicos, hospitales] = await Promise.all([
+    const [usuarios, hospitales, medicos] = await Promise.all([
         Usuario.find({nombre: regex}),
         Hospital.find({nombre: regex}),
         Medico.find({nombre: regex})
